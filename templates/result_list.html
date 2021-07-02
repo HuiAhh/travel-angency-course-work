@@ -1,0 +1,21 @@
+{{define "result_list.html"}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>result_list</title>
+</head>
+<body>
+    {{range $i, $v:=.users}}
+    <p>id:{{$v.Id}}</p>
+    <p>username:{{$v.Username}}</p>
+    <p>password:{{$v.Password}}</p>
+
+
+    <hr>
+    {{end}}
+</body>
+</html>
+
+{{end}}

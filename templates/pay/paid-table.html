@@ -1,0 +1,209 @@
+{{ define "paid-table.html" }}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {{ block "table-head.html" . }}
+
+    {{ end }}
+
+
+    <style>
+        .pagination .page-item {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    {{ $map := .res }}
+    {{ $page := $map.CurrentPage }}
+    {{ $totalPage := $map.TotalPage }}
+    {{ $size := $map.RequestSize }}
+    {{ $list := $map.Result }}
+    {{ $keyword := .keyword }}
+    <!--<main class="lyear-layout-content">-->
+
+    <div class="container-fluid p-t-15">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <section class="card">
+
+                    <div class="card-toolbar d-flex flex-column flex-md-row">
+
+                        <form class="search-bar ml-md-auto" method="get" action="#!" role="form">
+                            <input type="hidden" name="search_field" id="search-field" value="orderId">
+                            <div class="input-group form-group ml-md-auto">
+
+                                <input type="text" class="form-control" name="keyword" placeholder="请输入订单ID"
+                                    value="{{ $keyword }}">
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>订单ID</th>
+                                        <th>总款</th>
+                                        <th>路线名称</th>
+                                        <th>旅游团ID</th>
+                                        <th>旅游团名称</th>
+                                        <th>总人数</th>
+                                        <th>儿童人数</th>
+                                        <th>开团时间</th>
+                                        <th>创建时间</th>
+                                        <th>打印操作</th>
+                                        <th>撤单操作[逻辑删除]</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{ range $i,$v := $list }}
+                                    <tr>
+                                        <td>{{ $v.OrderId }}</td>
+                                        <td>{{ moneyTwoDigitsPoint $v.AccountReceivable }}</td>
+                                        <td>{{ $v.TravelPathName }}</td>
+
+                                        <td>{{ $v.TravelDetailId }}</td>
+                                        <td>{{ $v.TeamName }}</td>
+
+                                        <td>{{ $v.PersonCount }}</td>
+                                        <td>{{ $v.ChildCount }}</td>
+                                        <td>{{ formatTime $v.BeginTime }}</td>
+                                        <td>{{ formatTime $v.GmtCreate }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-warning btn-sm _confirmation js-create-tab"
+                                                data-id="{{ $v.OrderId }}"
+                                                data-title="确认书_{{ $v.OrderId }}"
+                                                href="#confirmation"
+                                                data-url="/pay/confirmation?id={{ $v.OrderId }}">
+                                                确认书
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-danger btn-sm _refund"
+                                                data-id="{{ $v.OrderId }}">
+                                                撤单
+                                            </button>
+
+                                        </td>
+                                    </tr>
+
+                                    {{ end }}
+
+                                </tbody>
+                            </table>
+
+                        </div>
+                        <ul class="pagination">
+                            <li class="active  page-item" href="#1" data-page="1"><a>1</a></li>
+                        </ul>
+
+                        <script>
+                            $(document).ready(function () {
+                                $('body').delegate('table ._refund', 'click', function () {
+                                    const id = $(this).data('id') || 0
+
+                                    $.confirm({
+                                        content: "是否撤单",
+                                        title: "注意id="+id,
+                                        buttons: {
+                                            yes: {
+                                                text: "撤单",
+                                                btnClass: 'btn-warning',
+                                                action: function () {
+                                                    $.Request({
+
+                                                        method: 'POST',
+                                                        url: `/order/refund?id=${id}`,
+                                                        success: function (res) {
+                                                            if (res.code == 200) {
+                                                                $.alert("撤单成功")
+                                                                window.location.href = '/paid_table?page={{ $page }}'
+                                                            } else {
+                                                                $.alert("撤单异常")
+                                                            }
+                                                        }
+                                                    })
+
+                                                    //$.alert("删除成功")
+                                                    
+                                                },
+                                                error: function () {
+                                                    $.alert("撤单失败，网络断线了")
+                                                }
+                                            },
+                                            no: {
+                                                text:"取消",
+                                                action: function () {
+                                                    // $.alert("取消删除")
+                                                }
+                                            }
+                                        }
+                                    })
+
+                                    //直接绑定事件，不用 click 了
+
+
+                                })
+                            })
+                        </script>
+                        <script>
+                            $(document).ready(function () {
+                                $.renderPage({{ $page }},
+                                {{ $totalPage }},
+                                function () {
+
+                                })
+                        });
+
+                        </script>
+                        <script>
+
+                            $('.pagination').delegate('.page-item', 'click', function () {
+                                //页面跳转
+                                // console.log(id)
+                                const keyword = $('[name=keyword]').eq(0).val() || ''
+                                const page = $(this).data('page') || '1';
+                                window.location.href = `/paid_table?page=${page}&keyword=${keyword}`
+                            })
+
+
+                        </script>
+                        <script>
+                            console.log(window.location.href)
+                            //用来展示内容
+                            $(function () {
+                                $("[data-toggle='popover']").popover({
+                                    delay: {
+                                        show: 500,
+                                        hide: 100,
+                                    },
+                                    trigger: 'hover'
+                                });
+                            });
+                        </script>
+
+
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <!--</main>-->
+
+</body>
+
+</html>
+
+{{ end }}

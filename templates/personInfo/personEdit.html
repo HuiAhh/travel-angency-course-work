@@ -1,0 +1,355 @@
+{{ define "personEdit.html" }}
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>用户信息添加</title>
+    {{ block "personInfo-head.html" .}}
+    {{ end }}
+
+    <style>
+        #card_body {
+            background-color: #5a6268;
+        }
+
+        #card_body .card {
+            margin-bottom: 12px;
+            padding: 30px;
+
+        }
+        .closeit {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+{{ $orderId := .orderId }}
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body" id="card_body">
+                <section class="card">
+                    <form action="" class="row">
+                        <div class="form-group col-md-12">
+                            <label>订单Id</label>
+                            <input type="text" class="form-control" name="orderId" value="{{ $orderId }}" v-model="orderId" data-type="int"
+                                   placeholder="">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <button class="btn btn-pink" @click.prevent="addOne">添加用户</button>
+                            <button class="btn btn-purple"  @click.prevent="submitAndSave()">保存</button>
+                        </div>
+                        <div class="form-group col-md-12">
+                        </div>
+                    </form>
+                </section>
+
+                <section class="card" v-for="(item,i) in list">
+                    <h5>
+                        用户 [[ i+1 ]] 的 信息
+                    </h5>
+
+                    <form    class="row _form_userInfo">
+                        <div class="closeit pull-right col-lg-12 text-right"  >
+                            <i class="mdi mdi-close  text-right " :data-index="i" @click="remove(i)"></i>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>用户名</label>
+                            <input type="text" class="form-control" name="personName" v-model="item.personName" value="" data-type="str"
+                                   placeholder="用户名">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>用户邮箱</label>
+                            <input type="text" class="form-control" name="email" v-model="item.email" value="" data-type="str"
+                                   placeholder="用户邮箱">
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label>电话</label>
+                            <input type="text" class="form-control" name="phone" v-model="item.phone" value="" data-type="str"
+                                   placeholder="用户电话">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>用户地址</label>
+                            <input type="text" class="form-control" name="personAddress" v-model="item.personAddress" value="" data-type="str"
+                                   placeholder="用户地址">
+                        </div>
+                    </form>
+                </section>
+
+
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    const notifyLoaded =  $.Throttle(function (){
+        // console.log('sss')
+        // that.loadDataByOrderId()
+        $.notify({
+            message:"加载用户信息"
+        })
+    },8000)
+    const notifyErr = $.Throttle(function(res) {
+        $.notify({
+            message:'数据加载失败' +res.errMsg||'',
+        })
+    },6000)
+
+    const app = new Vue({
+        delimiters:[ '[[',']]' ],
+        el: '#card_body',
+        data() {
+            return {
+                list: [
+                    {
+                        personName:'',
+                        email:'',
+                        phone:'',
+                        personAddress:'',
+                    },
+
+                ],
+                orderId:'{{ $orderId }}',
+            }
+
+        },
+        mounted() {
+          if(this.orderId !='')
+              this.loadDataByOrderId()
+            // init()
+        },
+        methods: {
+            newVal() {
+                //创建一个对象
+                return  {
+                    personName:'',
+                    email:'',
+                    phone:'',
+                    personAddress:'',
+                }
+            },
+            remove(idx) {
+                if (this.list.length<=1) {
+                    $.notify({
+                        message:"至少要保留一个用户信息"
+                    },{
+                        type:'danger'
+                    })
+                    // $.alert("至少填写一个用户信息")
+                }else {
+                    this.list.splice(idx,1)
+                }
+            },
+            addOne() {
+                this.list.push(this.newVal())
+            },
+            convertAndSend() {
+                const PostData = {
+                    orderId: parseInt(this.orderId),
+                    // personInfoList: this.list
+                }
+                // tempList = []
+                // for(let i=0;i<this.list.length;++i) {
+                //     // console.log(this.list)
+                //     console.log(this.list[i])
+                //     let temp = $.convertType(this.list[i],{
+                //         personName:'str',
+                //         email:'str',
+                //         phone:'str',
+                //         personAddress:'str',
+                //     })
+                //     tempList.push(temp)
+                // }
+                PostData.personInfoList = this.list
+                console.log(PostData)
+                $.Request({
+                    url:'/person_info/update',
+                    data:PostData,
+                    method:'POST',
+                    success:function (res) {
+                        console.log(res)
+                        $.notify({
+                            message:'更新成功'
+                        },{
+                            type:'success'
+                        })
+                    },
+                    error:function( err) {
+                        console.log(err)
+                    }
+                })
+            },
+            submitAndSave() {
+
+                // const orderId =
+                const that = this;
+
+                const form = $('form')
+                var isvalid = true;
+                form.each(function () {
+                    $(this).bootstrapValidator('validate')
+                    console.log($(this).data('bootstrapValidator').isValid())
+                   isvalid = isvalid && $(this).data('bootstrapValidator').isValid()
+                })
+                // form.bootstrapValidator('validate')
+                // console.log('表单信息',form.data('bootstrapValidator').isValid())
+                // form.validate()
+                console.log(isvalid)
+                if( isvalid == false) {
+                    $.notify({
+                        message:"保存失败，信息没写完",
+                        // title:"is",
+
+                    },{
+                        type:"warning"
+                    })
+                    return;
+                }
+                //校验数据
+
+                $.confirm({
+                        content:"是否保存数据用户",
+                        title: "更新操作",
+                        buttons :{
+                            yes:{
+                                text:"保存",
+                                btnClass:'btn-pink',
+                                action: function() {
+                                    // $.alert("删除成功")
+                                    that.convertAndSend()
+                                }
+                            },
+                            no: {
+                                text: "取消",
+                                action:function() {
+
+                                }
+
+                            }
+                        }
+                    })
+
+            },
+            loadDataByOrderId() {
+                const orderId = this.orderId
+                const that = this
+                window.jQuery.Request({
+                    method:'GET',
+                    url:`/person_info/find_by_order?orderId=${orderId}`,
+                    success:function(res) {
+                        if (res.code==500) {
+                           notifyErr(res)
+                        }else {
+                            const result = res.result
+                            if(result  && result.length>0) {
+                                that.list = result
+                            }else {
+                                that.list = [that.newVal()]
+                            }
+                        }
+                    }
+                })
+            },
+
+        },
+        watch:{
+            orderId(nval,old) {
+                console.log(nval)
+                // const that = this
+                this.loadDataByOrderId()
+                notifyLoaded()
+                // $.notify({
+                //     message:"加载用户信息"
+                // })
+
+            }
+        }
+    })
+</script>
+
+
+<script>
+    function init() {
+        $('form').each(function () {
+            $(this).bootstrapValidator({
+                excluded: [':disabled'],
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                message: "该值无效",
+                fields: {
+                    'orderId': {
+                        message: '表单填写错误',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            digits: {
+                                message: "只能写数字"
+                            },
+
+                        }
+                    },
+                    'email':{
+                        validators:{
+                            regexp : {
+                                regexp : /^[A-Za-z\d]+([-_.][A-Za-z\d]+)*@([A-Za-z\d]+[-.])+[A-Za-z\d]{2,4}$/,
+
+                                message : '请填写正确邮箱'
+                            }
+                        }
+                    },
+                    'phone':{
+                        validators:{
+                            notEmpty: {
+                                message:"用户电话不能为空"
+                            },
+                            regexp:{
+                                regexp:/^[1][3-8][0-9]{9}$/,
+                                message:"请填写电话格式",
+                            },
+
+                        }
+                    },
+                    'personName':{
+                        validators:{
+                            notEmpty:{
+                                message:"用户名不能为空"
+                            }
+                        }
+                    },
+                    "personAddress":{
+                        validators:{
+                            notEmpty:{
+                                message:"用户地址不能为空"
+                            }
+                        }
+                    }
+
+                }
+            })
+        })
+
+
+    }
+    $(document).ready(function() {
+        init()
+    })
+</script>
+
+</body>
+</html>
+
+
+{{ end }}
+

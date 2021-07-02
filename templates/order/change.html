@@ -1,0 +1,333 @@
+{{ define "order_change.html" }}
+
+
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>选色器 - 光年(Light Year Admin V4)后台管理系统模板</title>
+    <link rel="icon" href="favicon.ico" type="image/ico">
+    <meta name="keywords" content="LightYear,LightYearAdmin,光年,后台模板,后台管理系统,光年HTML模板">
+    <meta name="description" content="Light Year Admin V4是一个后台管理系统的HTML模板，基于Bootstrap v4.4.1。">
+    <meta name="author" content="yinqi">
+    <!-- <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/public/js/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link href="/public/css/style.min.css" rel="stylesheet">
+
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css" rel="stylesheet"> -->
+    {{ block "form-head.html" .}}
+    {{end}}
+</head>
+
+<body>
+    <div class="container-fluid p-t-15">
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card">
+
+                    <!--                 编辑订单页面   -->
+                    <div>
+
+
+                        <div class="card-body">
+
+                            <form id="form" action="#!" method="post" class="row">
+                                <!--start-->
+                                <input type="hidden" name="orderId" value="{{ .entity.OrderId }}" data-type="number"
+                                    class="hidden">
+                                    <input type="hidden" name="orderDetailId" value="{{ .entity.OrderDetailId }}" data-type="number"
+                                    class="hidden">
+                                <!-- <div class="form-group col-md-12">
+                                    <label for="TravelPathName">旅游路径ID</label>
+                                    <input type="text" class="form-control  " data-type="number" id="TravelPathId"
+                                        name="travelPathId" value="{{ .entity.TravelPathId }}"
+                                        placeholder="旅游路径ID:后续换成向导或下拉菜单">
+                                </div> -->
+
+                                <!-- <input type="hidden" name="updateByUserid" value="{{ .UpdateByUserid }}"
+                                    data-type="number" class="hidden"> -->
+
+                                <div class="form-group col-md-12">
+                                    <label for="UpdateByUserid">工作人员ID</label>
+                                    <input type="text" class="form-control  " data-type="number" id="UpdateByUserid"
+                                        name="updateByUserid" value="{{ .entity.UpdateByUserid }}"
+                                        placeholder="工作人员ID:后续用session，会隐藏">
+                                </div>
+
+                                <!--detail-->
+                                <div class="form-group col-md-12">
+                                    <label for="TravelDetailId">旅行团ID</label>
+                                    <input type="text" class="form-control  " data-type="number" id="TravelDetailId"
+                                        name="travelDetailId" value="{{ .entity.TravelDetailId }}"
+                                        placeholder="旅行团ID:后续换成向导或下拉菜单">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="PersonCount">旅行团总人数</label>
+                                    <input type="text" class="form-control  " data-type="number" id="PersonCount"
+                                        name="personCount" value="{{ .entity.PersonCount }}" placeholder="旅行团人数:填入正整数">
+                                </div>
+
+                                <div class="form-group col-md-12">
+                                    <label for="ChildCount">儿童人数</label>
+                                    <input type="text" class="form-control  " data-type="number" id="ChildCount"
+                                        name="childCount" value="{{ .entity.ChildCount }}" placeholder="旅行团人数:填入正整数">
+                                </div>
+
+                                <div class="form-group col-md-12">
+                                    <button type="button" id="submit_" class="btn btn-primary m-r-5">确 定</button>
+                                    <button type="button" class="btn btn-default"
+                                        onclick="javascript:history.back(-1);return false;">返 回</button>
+                                </div>
+                            </form>
+
+
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="card">
+                    订单详细描述
+                    <div>
+                        <section id="contentMd">{{.content}}</section>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- <script type="text/javascript" src="/public/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/public/js/popper.min.js"></script>
+    <script type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/public/js/bootstrap-colorpicker/bootstrap-colorpicker.min.js"></script>
+    <script type="text/javascript" src="/public/js/main.min.js"></script>
+    <script src="/static/js/jq.js"></script> -->
+    <script>
+        function Save(){
+            const jsonData = $.FormToJson('#form')
+            //获取富文本
+            const orderDetailDescription = $.getLiveHtml();
+            let orderId = $('[name=orderId]').val()
+            orderId=parseFloat(orderId)
+
+            let orderDetailId = $('[name=orderDetailId]').val()
+            orderDetailId=parseFloat(orderDetailId)
+
+            const res = { ...jsonData, orderDetailDescription, orderId, orderDetailId }
+            // res.activeStatus = res.activeStatus||false
+            console.log(res)
+
+            const form = $('form')
+            form.bootstrapValidator('validate')
+            // form.validate()
+            if(form.data('bootstrapValidator').isValid() == false) {
+                $.notify({
+                    message:"保存失败，信息没写完",
+                    // title:"is",
+
+                },{
+                    type:"warning"
+                })
+                return;
+            }
+
+            $.Request({
+                url: '/order/save',
+                data: res,
+                method: 'POST',
+                success: function (res) {
+                    console.log(res)
+                    if (res.code == 200) {
+                        $.notify({
+                            message: "保存成功",
+                            // title:"is",
+
+                        }, {
+                            type: "success"
+                        })
+                    } else {
+                        $.notify({
+                            message: "保存失败，信息没写完 ," + res.errMsg || '',
+                            // title:"is",
+
+                        }, {
+                            type: "warning"
+                        })
+                    }
+                },
+                error: function () {
+                    $.notify({
+                        message: "保存失败，信息没写完",
+                        // title:"is",
+
+                    }, {
+                        type: "warning"
+                    })
+                }
+
+            })
+        }
+    </script>
+    <script>
+        $('form').change(function () {
+            const f = $.FormToJson('form')
+            // console.log(getHtml())
+            console.log($.getLiveHtml())
+            console.log(f)
+        })
+        $(document).ready(function () {
+            $('#submit_').click(function () {
+                Save()
+            })
+        })
+    </script>
+
+
+    <!--
+富文本框架
+-->
+    <!-- <script src="http://libs.itshubao.com//tinymce/tinymce.min.js"></script> -->
+
+    <script>
+        $(document).ready(function () {
+            tinymce.init({
+                selector: '#contentMd',
+                language: 'zh_CN',
+                directionality: 'ltl',
+                browser_spellcheck: true,
+                contextmenu: false,
+                height: 480,
+                plugins: [
+                    "advlist autolink lists link image charmap print preview anchor",
+                    "searchreplace visualblocks code fullscreen",
+                    "insertdatetime media table contextmenu paste imagetools wordcount",
+                    "code"
+                ],
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code",
+                images_upload_url: 'http://example.itshubao.com/index/test/upload/type/tinymce', // 后端返回的json格式{ location : "/demo/image/1.jpg" }
+            });
+
+            //获取富文本
+            let getLiveHtml = function () {
+                return tinymce.activeEditor.getContent()
+                //tinyMCE.activeEditor.getContent()
+
+            }
+            $.extend({
+                getLiveHtml: getLiveHtml
+            })
+
+        });
+
+    </script>
+    <script>
+        function init() {
+            $('form').bootstrapValidator({
+                excluded: [':disabled'],
+                feedbackIcons: {
+                    valid: 'glyphicon glyphicon-ok',
+                    invalid: 'glyphicon glyphicon-remove',
+                    validating: 'glyphicon glyphicon-refresh'
+                },
+                message: "该值无效",
+                fields: {
+                    'travelPathId': {
+                        message: '表单填写错误',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            digits: {
+                                message: "只能写数字"
+                            },
+                            notBlank: {
+                                message: "不能为空"
+                            }
+                        }
+                    },
+                    'updateByUserid': {
+                        message: '表单填写错误',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            digits: {
+                                message: "只能写数字"
+                            },
+                            notBlank: {
+                                message: "不能为空"
+                            }
+                        }
+                    },
+                    'travelDetailId': {
+                        message: '表单填写错误',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            digits: {
+                                message: "只能写数字"
+                            },
+                            notBlank: {
+                                message: "不能为空"
+                            }
+                        }
+                    },
+                    'personCount': {
+                        message: '表单填写错误',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            digits: {
+                                message: "只能写数字"
+                            },
+                            notBlank: {
+                                message: "不能为空"
+                            }
+                        }
+                    },
+                    'childCount': {
+                        message: '表单填写错误',
+                        validators: {
+                            notEmpty: {
+                                message: '不能为空'
+                            },
+                            digits: {
+                                message: "只能写数字"
+                            },
+                            notBlank: {
+                                message: "不能为空"
+                            }
+                        }
+                    }
+                }
+            })
+        }
+
+        $(document).ready(function () {
+            init()
+        })
+        document.addEventListener('keydown', function(e){
+            if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)){
+                e.preventDefault();
+                Save()
+            }
+        });
+    </script>
+
+    <!-- <script src="/public/js/bootstrap-notify.min.js"></script> -->
+</body>
+
+</html>
+
+{{ end }}

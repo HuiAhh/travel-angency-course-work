@@ -1,0 +1,20 @@
+{{define "invalid.html"}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>lnvalid</title>
+</head>
+<body>
+    {{range $i, $v:=.errFields}}
+    <strong>invalid param: </strong>
+
+    <p>{{$v}}</p>
+
+    <hr>
+    {{end}}
+</body>
+</html>
+
+{{end}}

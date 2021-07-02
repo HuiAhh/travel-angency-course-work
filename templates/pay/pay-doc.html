@@ -1,0 +1,95 @@
+{{ define "pay-doc.html" }}
+<head>
+    {{ block "table-head.html" . }}
+
+    {{ end }}
+    <style>
+        body{
+            text-align: center;
+        }
+        .content{
+            text-align: left;
+            width: 80%;
+            margin:0 auto;
+            font-size: 20px;
+        }
+        .title{
+            font-size: 30px;
+        }
+        .footer{
+            text-align: left;
+            margin:0 auto;
+            width: 80%;
+            height: 200px;
+        }
+        .footer .sign{
+            font-size: 20px;
+            float: right;
+            width:40%;
+        }
+    </style>
+</head>
+<body>
+    {{ $map := .res }}
+    {{ $entity := $map.Result }}
+    <br/>
+    <br/>
+    <h2 class="title">交款单</h2>
+    <br/>
+    <div class="content">
+        <p>订单ID：{{ $entity.OrderId }}</p>
+        <p>路线名称：{{ $entity.TravelPathName }}</p>
+
+        <p>旅游团ID：{{ $entity.TravelDetailId }}</p>
+        <p>旅游团名称：{{ $entity.TeamName }}</p>
+
+        <p>总人数：{{ $entity.PersonCount }}人</p>
+        <p>儿童人数：{{ $entity.ChildCount }}人</p>
+        
+        <p>开团时间：{{ formatTime $entity.BeginTime }}</p>
+        <p>创建时间：{{ formatTime $entity.GmtCreate }}</p>
+
+        <p>成人单价：{{ moneyTwoDigitsPoint $entity.PerShouldPay }}</p>
+        <p>儿童单价：{{ moneyTwoDigitsPoint $entity.ChildShouldPay }}</p>
+        <p>应收账款[余款]：{{ moneyTwoDigitsPoint $entity.AccountReceivable }}</p>
+
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <div class="footer">
+        <table class="sign">
+            <tr>
+                <td><p>客户签名：</p></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><p>经手人：</p></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><p>交款日期：</p></td>
+                <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;&nbsp;&nbsp;月&nbsp;&nbsp;&nbsp;&nbsp;日</td>
+            </tr>
+    </table>
+    <button class="_print">打印</button>
+
+    </div>
+    
+    <script>
+        $(document).ready(function () {
+            // $(this).hide()
+
+            // window.print()
+            // $(this).show()
+            $("._print").click(function(){
+                $(this).hide()
+                window.print()
+                $(this).show()
+            })
+        })
+    </script>
+
+</body>
+{{ end }}

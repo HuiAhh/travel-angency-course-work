@@ -1,0 +1,72 @@
+{{ define "preview_travelPath_detail.html" }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {{ block "form-head.html" .}}
+    {{ end }}
+</head>
+<body>
+
+{{ $res := .res }}
+{{ $teamName := $res.TeamName }}
+{{ $teamDescription := $res.TeamDescription }}
+{{ $registerTime := $res.RegisterEndTime }}
+{{ $beginTime := $res.BeginTime }}
+{{ $endTime := $res.EndTime }}
+{{ $max_person_count := $res.MaxPersonCount }}
+<!--
+旅游路径信息
+-->
+{{ $travelPath := .path}}
+
+
+<div class="container-fluid p-t-15">
+
+    <div class="row">
+
+        <div class="col-lg-12">
+            <div class="card">
+                <header class="card-header"><div class="card-title">行程概览</div></header>
+                <div class="card-body">
+                    <h6 class="mt-3">旅游团名字</h6>
+                    <p> {{ $teamName }} </p> <br>
+
+
+                    <h6 class="mt-3">开始时间</h6>
+                    <p> {{ $beginTime }} </p> <br>
+                    <h6 class="mt-3">结束时间</h6>
+                    <p> {{ $endTime }} </p> <br>
+
+                    <h6 class="mt-3">最大人数</h6>
+                    <p> {{ $max_person_count }} </p> <br>
+
+<!--                    <h6 class="mt-3">详细内容</h6>-->
+<!--                    <p>  </p> <br>-->
+
+                    <h6 class="mt-4">旅游路径ID</h6>
+                    <p> {{$travelPath.TravelPathId }}</p>
+
+                    <h6 class="mt-4">旅游路径名字</h6>
+                    <p> {{$travelPath.TravelPathName }}</p>
+                    <h6 class="mt-4">详细信息</h6>
+                    <p>
+                        {{ .html }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+</body>
+</html>
+
+{{ end }}

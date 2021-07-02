@@ -1,0 +1,331 @@
+{{ define "travel_detail.html" }}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {{ block "table-head.html" . }}
+
+    {{ end }}
+    <style>
+        .pagination .page-item {
+            cursor: pointer;
+        }
+
+        .custom-control label, .custom-control input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+{{ $pageResult := .pageResult }}
+{{ $list := .list }}
+{{ $page :=$pageResult.CurrentPage }}
+{{ $totalPage :=$pageResult.TotalPage }}
+{{ $size := $pageResult.RequestSize }}
+
+{{ $id := .id }}
+{{ $keyword := .keyword }}
+
+<div class="container-fluid p-t-15">
+
+    <div class="row">
+
+        <div class="col-lg-12">
+            <section class="card">
+
+                <div class="card-toolbar d-flex flex-column flex-md-row">
+
+
+                    <form id="search_" class="search-bar ml-md-auto" method="get" action="#!" role="form">
+                        <div class="input-group form-group ml-md-auto">
+
+
+                            {{ if gt $id 0 }}
+                            <input type="text" class="form-control" name="id" placeholder="请输入旅游路线ID" value="{{$id}}">
+                            {{ else }}
+                            <input type="text" class="form-control" name="id" placeholder="请输入旅游路线ID">
+                            {{ end }}
+
+                        </div>
+                        <div class="input-group form-group ml-md-auto">
+
+
+                            <input type="text" class="form-control" name="keyword" placeholder="请输入名称"
+                                   value="{{ $keyword }}">
+                        </div>
+                    </form>
+                </div>
+                <script>
+                    function search_() {
+                        // console.log(111)
+                        let teamName = $('[name=keyword]').val()
+                        let id = $('[name=id]').val()
+                        let page = {{$page}}
+                        let size = {{$size}}
+                        window.location.href = `/travel_detail/query?teamName=${teamName}&id=${id}&page=${page}&size=${size}`
+                    }
+
+                    $('#search_ input').on('keyup', function (e) {
+                        e.preventDefault()
+                        if (e.keyCode == 13) {
+                            search_()
+                        }
+                    })
+                </script>
+                <script>
+                    $('body').delegate(".pagination li", 'click', function () {
+                        const page = $(this).data('page')
+                        let teamName = $('[name=keyword]').val()
+                        let id = $('[name=id]').val()
+
+
+                        window.location.href = `/travel_detail/query?teamName=${teamName}&id=${id}&page=${page}`
+                    })
+                </script>
+
+
+                <div class="card-body">
+
+                    <!--                        搜索内容-->
+
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+
+                                <th>ID</th>
+                                <th>名字</th>
+                                <th>描述</th>
+                                <td>可参加</td>
+                                <th>截止报名时间</th>
+                                <td>最大人数</td>
+                                <td>当前报名人数</td>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{ range $i, $v := $list }}
+                            <tr>
+
+                                <td>{{ $v.TravelDetailId }}</td>
+                                <td>{{ $v.TeamName }}</td>
+                                <td>
+                                    {{ $v.TeamDescription }}
+                                </td>
+
+                                <td>
+                                    <div class="custom-control custom-switch">
+                                        <input name="activeStatus" type="checkbox" class="custom-control-input"
+                                               id="customSwitchPrimary_{{$v.TravelDetailId}}"
+                                               data-checked="{{ $v.ActiveStatus }}" data-id="{{ $v.TravelDetailId }}"
+                                               value="true">
+                                        <label class="custom-control-label"
+                                               for="customSwitchPrimary_{{$v.TravelDetailId}}"></label>
+                                    </div>
+                                </td>
+                                <!--                                <td style="overflow: hidden;max-width: 400px;text-overflow: ellipsis" data-trigger="click" data-toggle="popover" data-container="body" data-placement="top" data-content="{{ $v.TeamDescription }} "> {{ $v.TeamDescription  }} </td>-->
+                                <td>{{ print $v.RegisterEndTime }}</td>
+                                <td>{{ $v.MaxPersonCount }}</td>
+                                <td>{{ $v.CurrentPersonCount }}</td>
+                                <td>{{ $v.BeginTime | print  }}</td>
+                                <td> {{ $v.EndTime }}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a class="btn btn-xs btn-default _edit js-create-tab"
+                                           data-title="编辑_{{ $v.TeamName }}" data-id="{{ $v.TravelDetailId }}"
+                                           data-url="/travel_detail/edit?id={{ $v.TravelDetailId }}" href="#" title=""
+                                           data-toggle="tooltip" data-original-title="编辑"><i class="mdi mdi-pencil"></i></a>
+                                        <a class="btn btn-xs btn-default _look js-create-tab"
+                                           data-title="预览_ {{ $v.TeamName }}"
+                                           data-url="/travel_detail/detail?id={{ $v.TravelDetailId }}"
+                                           data-id="{{ $v.TravelDetailId }}" href="#preview" title=""
+                                           data-toggle="tooltip" data-original-title="查看"><i
+                                                class="mdi mdi-eye"></i></a>
+                                        <a class="btn btn-xs btn-default _del" data-id="{{ $v.TravelDetailId }}"
+                                           href="#!/delete" title="" data-toggle="tooltip" data-original-title="删除"><i
+                                                class="mdi mdi-window-close"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            {{ end }}
+
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <ul class="pagination">
+                        <li class="active  page-item" href="#1" data-page="1"><a>1</a></li>
+                    </ul>
+
+                    <script>
+                        $(document).ready(function () {
+
+                            // $('body').delegate('table ._look','click',function () {
+                            //     const id = $(this).data('id')
+                            //     //点击编辑
+                            //     layer.open({
+                            //         type: 2,
+                            //         content: `/travelPath/preview?id=${id}`, //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no'],
+                            //         scrollbar:true,
+                            //         shade: false,
+                            //         maxmin: true, //开启最大化最小化按钮
+                            //         area: ['400px', '500px'],
+                            //
+                            //     });
+                            // })
+                            //
+                            //
+                            // $('body').delegate('table ._edit','click',function (){
+                            //     const id = $(this).data('id')
+                            //     //点击编辑
+                            //     layer.open({
+                            //         type: 2,
+                            //         content: `/travel_edit?id=${id}`, //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no'],
+                            //         scrollbar:true,
+                            //         shade: false,
+                            //         maxmin: true, //开启最大化最小化按钮
+                            //         area: ['400px', '500px'],
+                            //
+                            //     });
+                            // })
+                            $('body').delegate('table ._del', 'click', function () {
+                                const id = $(this).data('id') || 0
+
+                                $.confirm({
+                                    content: "是否删除旅游路线",
+                                    title: "危险操作",
+                                    buttons: {
+                                        yes: {
+                                            text: "删除",
+                                            btnClass: 'btn-red',
+                                            action: function () {
+                                                $.Request({
+                                                    method: 'POST',
+                                                    url: `/travel_detail/add`,
+                                                    data: {
+                                                        travelDetailId:id,
+                                                        deleteStatus: true,
+                                                    },
+                                                    success: function (res) {
+                                                        if (res.code == 200) {
+                                                            $.alert("删除成功")
+                                                            const page = $(this).data('page')
+                                                            let teamName = $('[name=keyword]').val()
+                                                            let id = $('[name=id]').val()
+                                                            window.location.href = `/travel_detail/query?teamName=${teamName}&id=${id}&page=${page}`
+                                                        } else {
+                                                            $.alert("删除异常")
+                                                        }
+                                                    }
+                                                })
+                                                //$.alert("删除成功")
+                                            },
+                                            error: function () {
+                                                $.alert("删除失败，网络断线了")
+                                            }
+                                        },
+                                        no: {
+                                            action: function () {
+                                                // $.alert("取消删除")
+                                            }
+                                        }
+                                    }
+                                })
+
+//直接绑定事件，不用 click 了
+
+
+                            })
+                        })
+                    </script>
+                    <script>
+                        $(document).ready(function () {
+                            $.renderPage({{ $page  }} , {{ $totalPage }} ,null);
+                        });
+
+                    </script>
+                    <script>
+
+                        $('.pagination').delegate('.page-item', 'click', function () {
+                            //页面跳转
+                            // console.log(id)
+                            const keyword = $('[name=keyword]').eq(0).val() || ''
+                            const page = $(this).data('page') || '1';
+                            window.location.href = `/travel_table?page=${page}&keyword=${keyword}`
+                        })
+
+
+                    </script>
+
+
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!--</main>-->
+
+
+<script>
+
+    $(document).ready(function () {
+        $('table .custom-control-input')
+            .each(function () {
+                let checked = $(this).data('checked');
+                $(this).prop('checked', checked)
+            });
+
+        //更新状态
+        $('table .custom-switch input').on('change',function (){
+            var activeStatus = $(this).prop('checked')||false
+
+            // activeStatus = activeStatus
+            console.log(activeStatus)
+            $.Request({
+                url:'/travel_detail/add',
+                method:'POST',
+                data: {
+                    activeStatus  :activeStatus,
+                    travelDetailId:$(this).data('id')
+                },
+                success:function (res) {
+                    if(res.code == 200) {
+                        $.notify({
+                            message:'更新成功'
+                        })
+                    }else {
+                        $.notify({
+                            message:'更新失败'
+                        },{
+                            type:'danger'
+                        })
+                    }
+                },
+                error:function ()
+                {
+                    $.notify({
+                        message:'更新失败'
+                    },{
+                        type:'danger'
+                    })
+                }
+            })
+        })
+
+    })
+
+</script>
+
+
+</body>
+</html>
+
+
+{{ end }}

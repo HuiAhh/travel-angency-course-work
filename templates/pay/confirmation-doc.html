@@ -1,0 +1,130 @@
+{{ define "confirmation-doc.html" }}
+<head>
+    {{ block "table-head.html" . }}
+
+    {{ end }}
+    <style>
+        body{
+            text-align: center;
+        }
+        .table{
+            border: 1px solid #000 !important;
+            text-align: center;
+            width: 60%;
+            margin:0 auto;
+            font-size: 18px;
+            border-spacing: 0;
+        }
+        .table tr{
+            border: 1px solid #000 !important;
+            font-size: 18px;
+            border-spacing: 0;
+        }
+        .table td{
+            border: 1px solid #000 !important;
+            font-size: 18px;
+            border-spacing: 0;
+        }
+        .table th{
+            border: 1px solid #000 !important;
+            font-size: 20px;
+            border-spacing: 0;
+        }
+        .content{
+            text-align: left;
+            width: 80%;
+            margin:0 auto;
+            font-size: 20px;
+        }
+        .title{
+            font-size: 30px;
+        }
+        .footer{
+            text-align: left;
+            margin:0 auto;
+            width: 80%;
+            height: 200px;
+        }
+        .footer .sign{
+            font-size: 20px;
+            float: right;
+            width:30%;
+        }
+    </style>
+</head>
+<body>
+    {{ $map := .res }}
+    {{ $entity := $map.Result }}
+    <br/>
+    <br/>
+    <h2 class="title">确认单</h2>
+    <br/>
+    <div class="content">
+        <p>订单ID：{{ $entity.OrderId }}</p>
+        <p>路线名称：{{ $entity.TravelPathName }}</p>
+
+        <p>旅游团ID：{{ $entity.TravelDetailId }}</p>
+        <p>旅游团名称：{{ $entity.TeamName }}</p>
+
+        <p>总人数：{{ $entity.PersonCount }}人</p>
+        <p>儿童人数：{{ $entity.ChildCount }}人</p>
+        
+        <p>开团时间：{{ formatTime $entity.BeginTime }}</p>
+        <p>创建时间：{{ formatTime $entity.GmtCreate }}</p>
+        <p>订单描述：</p>
+        <div id="description"></div>
+        
+        <p>旅游团描述：</p>
+        <div id="team-description"></div>
+        
+
+        
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    
+    <!--table demo-->
+    <h2 class="title">游客成员表</h2>
+    <table class="table" cellpadding="2">
+        <tr>
+            <th></th>
+            <th>姓名</th>
+            <th>邮箱</th>
+            <th>电话</th>
+        </tr>
+        
+        <!--for persons-->
+        {{ range $i,$v := .persons }}
+        <tr>
+            <td>{{ no $i }}</td>
+            <td>{{ $v.PersonName }}</td>
+            <td>{{ $v.Email }}</td>
+            <td>{{ $v.Phone }}</td>
+
+        </tr>
+        {{ end }}
+        <!--for end-->
+    </table>
+    <button class="_print">打印</button>
+    <script>
+        $(document).ready(function () {
+            $("#description").html("{{ .description }}")
+            $("#team-description").html("{{ .teamDescription }}")
+            // $(this).hide()
+
+            // window.print()
+            // $(this).show()
+
+            $("._print").click(function(){
+                $(this).hide()
+                window.print()
+                $(this).show()
+            })
+        })
+    </script>
+
+</body>
+{{ end }}
+

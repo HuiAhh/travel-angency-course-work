@@ -1,0 +1,302 @@
+{{ define "travel_detail_edit.html" }}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>添加详细规划</title>
+
+
+    <link href="/public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/public/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/public/js/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link defer href="/public/css/style.min.css" rel="stylesheet">
+    <link defer href="https://cdn.bootcdn.net/ajax/libs/bootstrap-validator/0.5.3/css/bootstrapValidator.css"
+          rel="stylesheet">
+
+    <!--
+    模板样式
+    -->
+    <link defer href="http://lyear.itshubao.com/iframe/css/style.min.css" rel="stylesheet">
+
+    <link defeer href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link defer href="//cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css" rel="stylesheet">
+
+
+    <!--
+    js
+    -->
+    <link href="/public/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="/public/js/bootstrap-datepicker/bootstrap-datepicker3.min.css" rel="stylesheet">
+    <link href="/public/js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="/public/js/bootstrap-clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet">
+
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/public/js/jquery.min.js"></script>
+    <script defer type="text/javascript" src="/public/js/popper.min.js"></script>
+    <script defer type="text/javascript" src="/public/js/bootstrap.min.js"></script>
+    <script defer type="text/javascript" src="/public/js/bootstrap-colorpicker/bootstrap-colorpicker.min.js"></script>
+
+    <script defer src="/static/js/jq.js"></script>
+
+
+    <script defer src="http://libs.itshubao.com//tinymce/tinymce.min.js"></script>
+
+    <script defer src="/public/js/bootstrap-notify.min.js"></script>
+    <script defer type="text/javascript"
+            src="http://libs.itshubao.com//bootstrapvalidator/js/bootstrapValidator.min.js"></script>
+
+    <script type="text/javascript" src="/public/js/popper.min.js"></script>
+
+
+    <!--    end
+
+    -->
+
+
+    <link href="/public/js/bootstrap-datepicker/bootstrap-datepicker3.min.css" rel="stylesheet">
+    <link href="/public/js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="/public/js/bootstrap-clockpicker/bootstrap-clockpicker.min.css" rel="stylesheet">
+
+
+    <!--日期选择器-->
+    <script type="text/javascript" src="/public/js/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+    <script type="text/javascript"
+            src="/public/js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+    <!--时间日期选择器-->
+    <script type="text/javascript" src="/public/js/moment.js/moment.min.js"></script>
+    <script type="text/javascript" src="/public/js/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/public/js/moment.js/locale/zh-cn.min.js"></script>
+    <!--&lt;!&ndash;时间选择器&ndash;&gt;-->
+    <script type="text/javascript" src="/public/js/bootstrap-clockpicker/bootstrap-clockpicker.min.js"></script>
+    <script type="text/javascript" src="/public/js/main.min.js"></script>
+
+
+</head>
+<body>
+
+{{ $res := .result }}
+<div class="container-fluid p-t-15">
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-body">
+
+                    <form action="#!" method="post" class="row">
+                        <div class="form-group col-md-12">
+                            <label>旅游团ID</label>
+                            <input type="text" disabled class="form-control" name="travelDetailId" value="{{ $res.TravelDetailId }}" data-type="int"
+                                   placeholder="请输入旅游路线ID">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>旅游路线 ID</label>
+                            <input type="text" class="form-control" name="travelPathId"  data-type="int"
+                                   placeholder="请输入旅游路线ID" value="{{ $res.TravelPathId }}">
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label>旅游团名字</label>
+                            <input type="text" class="form-control" name="teamName" value="{{ $res.TeamName }}" data-type="str"
+                                   placeholder="请输入标题">
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            是否上架
+                            <div class="custom-control custom-switch">
+                                <input data-type="bool" name="activeStatus" type="checkbox" class="custom-control-input" id="customSwitchPrimary" checked="true" value="true">
+                                <label class="custom-control-label" for="customSwitchPrimary"></label>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <label>最大人数</label>
+                            <input type="text" class="form-control" name="maxPersonCount" value="{{ $res.MaxPersonCount }}" data-type="int"
+                                   placeholder="最大人数">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>报名截止时间</label>
+                            <input class="form-control" type="text" data-provide="datetimepicker" name="registerEndTime"
+                                   placeholder="报名截止时间" value="{{ $res.RegisterEndTime }}" data-side-by-side="true"
+                                   data-format="YYYY-MM-DD HH:mm">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>旅游开始时间</label>
+                            <input class="form-control" type="text" data-provide="datetimepicker"
+                                   name="beginTime" placeholder="旅游开始时间" value="{{ $res.BeginTime }}" data-side-by-side="true"
+                                   data-format="YYYY-MM-DD HH:mm">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label>旅游结束时间</label>
+                            <input class="form-control" type="text" data-provide="datetimepicker"
+                                   name="endTime" placeholder="旅游结束时间" value="{{ $res.EndTime }}" data-side-by-side="true"
+                                   data-format="YYYY-MM-DD HH:mm">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="seo_description">描述</label>
+                            <textarea class="form-control" id="seo_description" name="teamDescription" data-type="str"
+                                      rows="5" value="" placeholder="描述">{{ $res.TeamDescription }}</textarea>
+                        </div>
+
+                        <div class="form-group col-md-12">
+                            <button type="button" class="btn btn-primary ajax-post"  id="submit_">确 定</button>
+                            <button type="button" class="btn btn-default"
+                                    onclick="javascript:history.back(-1);return false;">返 回
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const submitDom = $('#submit_')
+    $(document).ready(function () {
+        submitDom.click(function () {
+            const form = $('form')
+            form.bootstrapValidator('validate')
+            // form.validate()
+            if(form.data('bootstrapValidator').isValid() == false) {
+                $.notify({
+                    message:"保存失败，信息没写完",
+                    // title:"is",
+
+                },{
+                    type:"warning"
+                })
+                return;
+            }
+            const data = $.FormToJson('form')
+            data.travelDetailId = parseInt( $('[name=travelDetailId]').val())
+            $.Request({
+                method:'POST',
+                data: data,
+                url: '/travel_detail/add',
+                success:function (res) {
+                    if(res.code==200) {
+                        $.notify({
+                            message:"保存成功",
+                            // title:"is",
+
+                        })
+                        console.log(res)
+                    }else {
+                        let msg = res.errMsg||''
+                        $.notify({
+                            message:"保存失败，后台参数校验不通过" + msg,
+                            // title:"is",
+
+                        },{
+                            type:"danger"
+                        })
+                    }
+                },
+                error: function () {
+                    $.notify({
+                        message:"保存失败，断网了",
+                        // title:"is",
+
+                    },{
+                        type:"warning"
+                    })
+                }
+            })
+        })
+    })
+</script>
+
+<script>
+    function init() {
+        $('form').bootstrapValidator({
+            excluded: [':disabled'],
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            message: "该值无效",
+            fields: {
+                'travelPathID': {
+                    message: '表单填写错误',
+                    validators: {
+                        notEmpty: {
+                            message: '不能为空'
+                        },
+                        digits: {
+                            message: "只能写数字"
+                        },
+                        notBlank: {
+                            message: "不能为空"
+                        }
+                    }
+                },
+                'teamDescription': {
+                    message: '表单填写错误',
+                    validators: {
+                        notEmpty: {
+                            message: '不能为空'
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 400,
+                            message: '没有写具体描述'
+                        },
+                        notBlank: {
+                            message: "不能为空"
+                        }
+                    }
+                },
+                'teamName': {
+                    message: '表单填写错误',
+                    validators: {
+                        notEmpty: {
+                            message: '不能为空'
+                        },
+                        stringLength: {
+                            min: 1,
+                            max: 400,
+                            message: '没有写具体描述'
+                        },
+                        notBlank: {
+                            message: "不能为空"
+                        }
+                    }
+                },
+                'maxPersonCount': {
+                    message: '表单填写错误',
+                    validators: {
+                        notEmpty: {
+                            message: '不能为空'
+                        },
+                        digits: {
+                            message: "只能写数字"
+                        },
+                        notBlank: {
+                            message: "不能为空"
+                        }
+                    }
+                },
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        init()
+    })
+</script>
+
+<!--<script type="text/javascript" src="/public/js/jquery.min.js"></script>-->
+<!--<script type="text/javascript" src="/public/js/popper.min.js"></script>-->
+<!--<script type="text/javascript" src="/public/js/bootstrap.min.js"></script>-->
+
+</body>
+</html>
+
+
+{{ end }}

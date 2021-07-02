@@ -1,0 +1,55 @@
+{{ define "daily-group.html" }}
+
+<head>
+    {{ block "table-head.html" . }}
+
+    {{ end }}
+    <script type="text/javascript" src="/public/js/Chart.min.js"></script>
+
+</head>
+
+<body>
+    <div style="position: relative; height:40vh; width:80vw">
+        <canvas id="chart-1"></canvas>
+    </div>
+    <script>
+        $(document).ready(function () {
+            let ctx = $("#chart-1").get(0).getContext("2d")
+            let newChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [
+                        {{ range $i,$v:= .data }}
+                            '{{ labelDate $v.Date }}',
+                        {{ end }}
+                        ],
+                    datasets: [{
+                        // label: '# of Votes',
+                        data: [
+                        {{ range $i,$v:= .data }}
+                            {{ $v.Amount }},
+                        {{ end }}
+                        ],
+                        label: "团/波",
+                        fillColor: "rgba(151,187,205,0.5)",
+                        strokeColor: "rgba(151,187,205,0.8)",
+                        highlightFill: "rgba(151,187,205,0.75)",
+                        highlightStroke: "rgba(151,187,205,1)",
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                // beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            })
+        })
+    </script>
+
+</body>
+{{ end }}
